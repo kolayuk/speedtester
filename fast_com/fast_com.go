@@ -98,11 +98,11 @@ func (f *fastComProvider) TestUploadAsync(callback speedtester.MeasuredSpeedCall
 	errChan := make(chan error)
 	for _, url := range urls {
 		go func(urlToSendPostRequest string) {
-			const megabyte = 1000 * 1000 // TODO: 1024? but it seems we're calculating network throughput, not disk space, so it seems ok
-			const payloadSize = 1 * megabyte
+			const megabyte = 1000 * 1000      // TODO: 1024? but it seems we're calculating network throughput, not disk space, so it seems ok
+			const payloadSize = 10 * megabyte // TODO: not sure about size, is 10 mb okay?
 			timeStart := time.Now()
 			// according to dev tools on fast.com frontend sends post requests to urls from the lists and writes data, payload does not matter
-			payload := strings.NewReader(strings.Repeat("0", payloadSize)) // TODO: not sure about size, is 1 mb okay?
+			payload := strings.NewReader(strings.Repeat("0", payloadSize))
 			resp, err := http.Post(urlToSendPostRequest, "text/plain", payload)
 			if err != nil {
 				errChan <- err
@@ -113,9 +113,10 @@ func (f *fastComProvider) TestUploadAsync(callback speedtester.MeasuredSpeedCall
 				_ = resp.Body.Close()
 				wg.Done()
 			}()
+			// cheching how much time is takes to send such amount of data
 			spentTime := time.Since(timeStart).Seconds()
-			bytesPerSec := payloadSize / spentTime
-			callback(bytesPerSec / float64(megabyte)) // divide bytes/s to megabyte (1000*1000) to get mbps
+			bitsPerSec := (payloadSize * float64(8)) / spentTime // *8 to get bits
+			callback((bitsPerSec / megabyte))                    // divide bits/s to megabyte (1000*1000) to get mbps
 		}(url)
 	}
 	wg.Wait()
