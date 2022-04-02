@@ -32,7 +32,8 @@ fmt.Println("speedtest.net", downloadSpeed, uploadSpeed)
 ```
 
 You can also add new speedtest providers of your choice without modification of the library. You will need to implement
-an [interface]() and use your implementation in TestSpeed function call
+an [interface](https://github.com/kolayuk/speedtester/blob/master/speedtester.go#L26) and use your implementation in
+TestSpeed function call
 
 ```go
 package my_awesome_package
