@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestInvoicesRouter(t *testing.T) {
+func TestSpeedTester(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "invoices router tests")
+	RunSpecs(t, "speedtester package tests")
 }

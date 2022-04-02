@@ -14,8 +14,16 @@ func (s *speedTestNetProvider) TestDownload() (float64, error) {
 	//TODO implement me
 	panic("implement me")
 }
+func (s *speedTestNetProvider) TestDownloadAsync(callback speedtester.MeasuredSpeedCallback) error {
+	//TODO implement me
+	panic("implement me")
+}
 
 func (s *speedTestNetProvider) TestUpload() (float64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+func (s *speedTestNetProvider) TestUploadAsync(callback speedtester.MeasuredSpeedCallback) error {
 	//TODO implement me
 	panic("implement me")
 }
