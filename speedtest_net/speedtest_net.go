@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/showwin/speedtest-go/speedtest"
 	"speedtester"
+	"sync"
 )
 
 // returns speedtest.net implementation initialized with provided options
@@ -20,46 +21,81 @@ type speedTestNetProvider struct {
 }
 
 func (s *speedTestNetProvider) TestDownload() (float64, error) {
-	err := s.fetchServers()
+	maxDownloadSpeed := float64(0)
+	err := s.TestDownloadAsync(func(mbpsSpeed float64) {
+		if mbpsSpeed > maxDownloadSpeed {
+			maxDownloadSpeed = mbpsSpeed
+		}
+	})
 	if err != nil {
 		return 0, errors.WithStack(err)
-	}
-	maxDownloadSpeed := float64(0)
-	for _, server := range s.servers {
-		err = server.DownloadTest(false)
-		if err != nil {
-			return 0, errors.WithStack(err)
-		}
-		if server.DLSpeed > maxDownloadSpeed {
-			maxDownloadSpeed = server.DLSpeed
-		}
 	}
 	return maxDownloadSpeed, nil
 }
 func (s *speedTestNetProvider) TestDownloadAsync(callback speedtester.MeasuredSpeedCallback) error {
-	return errors.Errorf("Not implemented yet")
+	err := s.fetchServers()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	errChan := make(chan error)
+	var wg sync.WaitGroup
+	wg.Add(len(s.servers))
+	for _, serverInList := range s.servers {
+		go func(server *speedtest.Server) {
+			defer wg.Done()
+			err = server.DownloadTest(false)
+			if err != nil {
+				errChan <- err
+			}
+			callback(server.DLSpeed)
+		}(serverInList)
+	}
+	wg.Wait()
+	select {
+	case err := <-errChan:
+		return errors.WithStack(err)
+	default:
+		return nil
+	}
 }
 
 func (s *speedTestNetProvider) TestUpload() (float64, error) {
-	err := s.fetchServers()
+	maxUploadSpeed := float64(0)
+	err := s.TestUploadAsync(func(mbpsSpeed float64) {
+		if mbpsSpeed > maxUploadSpeed {
+			maxUploadSpeed = mbpsSpeed
+		}
+	})
 	if err != nil {
 		return 0, errors.WithStack(err)
-	}
-	maxUploadSpeed := float64(0)
-	for _, server := range s.servers {
-		err = server.UploadTest(false)
-		if err != nil {
-			return 0, errors.WithStack(err)
-		}
-		if server.ULSpeed > maxUploadSpeed {
-			maxUploadSpeed = server.ULSpeed
-		}
 	}
 	return maxUploadSpeed, nil
 }
 func (s *speedTestNetProvider) TestUploadAsync(callback speedtester.MeasuredSpeedCallback) error {
-	//TODO implement me
-	panic("implement me")
+	err := s.fetchServers()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	errChan := make(chan error)
+	var wg sync.WaitGroup
+	wg.Add(len(s.servers))
+	for _, serverInList := range s.servers {
+		go func(server *speedtest.Server) {
+			defer wg.Done()
+			err = server.UploadTest(false)
+			if err != nil {
+				errChan <- err
+			}
+			callback(server.ULSpeed)
+		}(serverInList)
+	}
+	wg.Wait()
+	select {
+	case err := <-errChan:
+		return errors.WithStack(err)
+	default:
+		return nil
+	}
 }
 
 func (s *speedTestNetProvider) fetchServers() error {
