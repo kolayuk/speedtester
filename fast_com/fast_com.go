@@ -14,11 +14,12 @@ import (
 )
 
 // returns fast.com implementation of speed test
-func NewFastComProvider() speedtester.SpeedTestProvider {
-	return &fastComProvider{}
+func NewFastComProvider() *fastComProvider {
+	return &fastComProvider{fastComClient: fast.New()}
 }
 
 type fastComProvider struct {
+	fastComClient *fast.Fast
 }
 
 func (f *fastComProvider) TestDownload() (float64, error) {
@@ -38,14 +39,13 @@ func (f *fastComProvider) TestDownload() (float64, error) {
 func (f *fastComProvider) TestDownloadAsync(callback speedtester.MeasuredSpeedCallback) error {
 	// we are free to use 3rd party libraries by the task description, so we have a library with a download speed test from fast.com
 	// using it here, so dont reinvent wheel
-	fastCom := fast.New()
-	err := fastCom.Init()
+	err := f.fastComClient.Init()
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	// get urls to download from
-	urls, err := fastCom.GetUrls()
+	urls, err := f.fastComClient.GetUrls()
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -59,7 +59,7 @@ func (f *fastComProvider) TestDownloadAsync(callback speedtester.MeasuredSpeedCa
 		}
 	}()
 
-	err = fastCom.Measure(urls, KbpsChan)
+	err = f.fastComClient.Measure(urls, KbpsChan)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -81,13 +81,12 @@ func (f *fastComProvider) TestUpload() (float64, error) {
 }
 func (f *fastComProvider) TestUploadAsync(callback speedtester.MeasuredSpeedCallback) error {
 	// get URLs the same way as in download test
-	fastCom := fast.New()
-	err := fastCom.Init()
+	err := f.fastComClient.Init()
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	// get urls to download from
-	urls, err := fastCom.GetUrls()
+	urls, err := f.fastComClient.GetUrls()
 	if err != nil {
 		return errors.WithStack(err)
 	}
