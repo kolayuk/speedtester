@@ -18,8 +18,8 @@ var _ = Describe("Benchmarking", func() {
 	Measure("fast.com implementation", func(b Benchmarker) {
 		runtime := b.Time("runtime", func() {
 			download, upload, err := speedtester.TestSpeed(fast_com.NewFastComProvider())
-			Expect(err).NotTo(HaveOccurred())
-			Expect(download).To(BeNumerically(">", 0))
+			Expect(err).NotTo(HaveOccurred())          // no error
+			Expect(download).To(BeNumerically(">", 0)) // speed was calculated
 			Expect(upload).To(BeNumerically(">", 0))
 			fmt.Println("fast.com", download, upload)
 		})
@@ -39,7 +39,7 @@ var _ = Describe("Benchmarking", func() {
 	}, COUNTS)
 
 	// difference between fast.com and speedtest results shouldn't be too much (const = 30%)
-	It("compare results", func() {
+	It("compare results between speedtest.net and fast.com", func() {
 		const ACCEPTABLE_DIFFERENCE = 0.3 // 30%
 		downloadFastCom, uploadFastCom, err := speedtester.TestSpeed(fast_com.NewFastComProvider())
 		Expect(err).NotTo(HaveOccurred())
@@ -53,4 +53,7 @@ var _ = Describe("Benchmarking", func() {
 		Expect(uploadSpeedTest).To(BeNumerically(">", uploadFastCom-(uploadFastCom*ACCEPTABLE_DIFFERENCE)))
 		Expect(uploadSpeedTest).To(BeNumerically("<", uploadFastCom+(uploadFastCom*ACCEPTABLE_DIFFERENCE)))
 	})
+	// TODO: negative cases ( return error) is not covered, but I have no idea how can I get network error
+	// without any hardware breaking (like deattaching an ethernet cable), but in case of that
+	// test consistency would be low, positive cases will fail too
 })

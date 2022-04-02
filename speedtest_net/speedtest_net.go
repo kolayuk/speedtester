@@ -11,7 +11,7 @@ import (
 )
 
 // returns speedtest.net implementation initialized with provided options
-func NewSpeedTestNetProvider(options ...speedtest.Option) speedtester.SpeedTestProvider {
+func NewSpeedTestNetProvider(options ...speedtest.Option) *speedTestNetProvider {
 	return &speedTestNetProvider{client: speedtest.New(options...)}
 }
 
