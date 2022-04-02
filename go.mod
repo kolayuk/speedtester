@@ -1,4 +1,4 @@
-module speedtester
+module github.com/kolayuk/speedtester
 
 go 1.14
 
