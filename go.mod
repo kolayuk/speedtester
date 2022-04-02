@@ -11,4 +11,5 @@ require (
 	github.com/pkg/errors v0.9.1
 	gopkg.in/ddo/go-dlog.v2 v2.1.0 // indirect
 	gopkg.in/ddo/pick.v1 v1.2.2 // indirect
+	github.com/showwin/speedtest-go v1.1.5
 )
