@@ -4,9 +4,9 @@ package speedtest_net
 // to minimize binary size in case of client-app uses only one kind of providers, it can import only required package
 
 import (
+	"github.com/kolayuk/speedtester"
 	"github.com/pkg/errors"
 	"github.com/showwin/speedtest-go/speedtest"
-	"speedtester"
 	"sync"
 )
 

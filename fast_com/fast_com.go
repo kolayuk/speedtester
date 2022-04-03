@@ -5,9 +5,9 @@ package fast_com
 
 import (
 	"github.com/ddo/go-fast"
+	"github.com/kolayuk/speedtester"
 	"github.com/pkg/errors"
 	"net/http"
-	"speedtester"
 	"strings"
 	"sync"
 	"time"

@@ -2,11 +2,11 @@ package speedtester_test
 
 import (
 	"fmt"
+	"github.com/kolayuk/speedtester"
+	"github.com/kolayuk/speedtester/fast_com"
+	"github.com/kolayuk/speedtester/speedtest_net"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"speedtester"
-	"speedtester/fast_com"
-	"speedtester/speedtest_net"
 )
 
 var _ = Describe("Benchmarking", func() {
