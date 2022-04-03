@@ -19,7 +19,15 @@ func NewFastComProvider() *fastComProvider {
 }
 
 type fastComProvider struct {
-	fastComClient *fast.Fast
+	fastComClient fastCom3rdPartyClient
+}
+
+// interface matching 3rd party library's client functions
+// to create mocked implementation
+type fastCom3rdPartyClient interface {
+	Init() error
+	GetUrls() (urls []string, err error)
+	Measure(urls []string, KbpsChan chan<- float64) (err error)
 }
 
 func (f *fastComProvider) TestDownload() (float64, error) {

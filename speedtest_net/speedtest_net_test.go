@@ -68,4 +68,6 @@ var _ = Describe("speedtest.net support", func() {
 	// TODO: negative cases ( return error) is not covered, but I have no idea how can I get network error
 	// without any hardware breaking (like deattaching an ethernet cable), but in case of that
 	// test consistency would be low, positive cases will fail too
+	// and we have no chance to mock it because of 3rd party library does not expose an interface to mock
+	// and logic is separated to multiple struct implementations
 })
